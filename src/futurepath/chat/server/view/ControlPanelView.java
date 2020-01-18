@@ -5,19 +5,23 @@
  */
 package futurepath.chat.server.view;
 
+import futurepath.chat.server.controller.Connection;
 import futurepath.chat.server.exceptions.numberOfRoomsTooBigException;
 import futurepath.chat.server.exceptions.numberOfRoomsTooSmallException;
 import futurepath.chat.server.exceptions.numberOfUsersTooBigException;
 import futurepath.chat.server.exceptions.numberOfUsersTooSmallException;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Angela Serrano
  */
 public class ControlPanelView extends javax.swing.JFrame {
+    
+    private Connection conn = null;
 
     /**
      * Creates new form ControlPanelView
@@ -28,6 +32,8 @@ public class ControlPanelView extends javax.swing.JFrame {
         setSize(d);
         setPreferredSize(d);
         setMinimumSize(d);
+        setResizable(false);
+        
     }
 
     /**
@@ -58,6 +64,7 @@ public class ControlPanelView extends javax.swing.JFrame {
         jPanel.add(jLabel2);
         jLabel2.setBounds(50, 90, 190, 16);
 
+        roomsActiveTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         roomsActiveTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 roomsActiveTFActionPerformed(evt);
@@ -65,9 +72,17 @@ public class ControlPanelView extends javax.swing.JFrame {
         });
         jPanel.add(roomsActiveTF);
         roomsActiveTF.setBounds(270, 42, 30, 30);
+
+        usersPerRoomTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        usersPerRoomTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usersPerRoomTFActionPerformed(evt);
+            }
+        });
         jPanel.add(usersPerRoomTF);
         usersPerRoomTF.setBounds(270, 82, 30, 30);
 
+        connectBT.setBackground(new java.awt.Color(97, 204, 144));
         connectBT.setText("Connect");
         connectBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,42 +102,66 @@ public class ControlPanelView extends javax.swing.JFrame {
     }//GEN-LAST:event_roomsActiveTFActionPerformed
 
     private void connectBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectBTActionPerformed
-        if (connectBT.getText().equals("Connect")) {
-            connectBT.setText("Disconnect");
-        } else {
-            connectBT.setText("Connect");
-        }
 
         try {
             if (roomMaxMin() && usersMaxMin()) {
+
                 int numberOfRooms = Integer.parseInt(roomsActiveTF.getText());
                 int numberOfUsers = Integer.parseInt(usersPerRoomTF.getText());
-                //conectar el servidor con los parámetros
+                
+                if (connectBT.getText().equals("Connect")) {
+                    //conectar el servidor con los parámetros
+                    conn = new Connection(numberOfRooms, numberOfUsers);
+                    connectBT.setText("Disconnect");
+                    connectBT.setBackground(new Color(204, 96, 96));
+                    roomsActiveTF.setEditable(false);
+                    usersPerRoomTF.setEditable(false);
+                } else {
+                    conn.close();
+                    connectBT.setText("Connect");
+                    connectBT.setBackground(new Color(97, 204, 144));
+                    roomsActiveTF.setEditable(true);
+                    usersPerRoomTF.setEditable(true);
+                }
             }
         } catch (numberOfRoomsTooBigException | numberOfRoomsTooSmallException | numberOfUsersTooSmallException | numberOfUsersTooBigException ex) {
-            System.out.println("");
+            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_connectBTActionPerformed
 
+    private void usersPerRoomTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usersPerRoomTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_usersPerRoomTFActionPerformed
+
     private boolean roomMaxMin() throws numberOfRoomsTooBigException, numberOfRoomsTooSmallException {
-        if (Integer.parseInt(roomsActiveTF.getText()) < 1) {
-            throw new numberOfRoomsTooSmallException();
-        } else if (Integer.parseInt(roomsActiveTF.getText()) > 20) {
-            throw new numberOfRoomsTooBigException();
-        } else {
-            return true;
+        try {
+            if (Integer.parseInt(roomsActiveTF.getText()) < 1) {
+                throw new numberOfRoomsTooSmallException();
+            } else if (Integer.parseInt(roomsActiveTF.getText()) > 20) {
+                throw new numberOfRoomsTooBigException();
+            } else {
+                return true;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(new JFrame(), "Please, introduce a correct value", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return false;
     }
 
     private boolean usersMaxMin() throws numberOfUsersTooSmallException, numberOfUsersTooBigException {
-        if (Integer.parseInt(usersPerRoomTF.getText()) < 2) {
-            throw new numberOfUsersTooSmallException();
-        } else if (Integer.parseInt(usersPerRoomTF.getText()) > 50) {
-            throw new numberOfUsersTooBigException();
-        } else {
-            return true;
+        try {
+            if (Integer.parseInt(usersPerRoomTF.getText()) < 2) {
+                throw new numberOfUsersTooSmallException();
+            } else if (Integer.parseInt(usersPerRoomTF.getText()) > 50) {
+                throw new numberOfUsersTooBigException();
+            } else {
+                return true;
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(new JFrame(),  "Please, introduce a correct value", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return false;
     }
 
     /**
