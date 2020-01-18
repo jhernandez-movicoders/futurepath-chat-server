@@ -2,7 +2,6 @@ package futurepath.chat.server.controller;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,12 +10,9 @@ import java.util.logging.Logger;
 
 
 public class CommandsController { private int numrooms;
-    private int usrsxroom;
-    private ServerSocket serverSocket;
     private HashMap<Socket, String> usersConnected;
     private HashMap<String, ArrayList<String>> usersInTheRoom; 
     private ArrayList<Thread> threads;
-    private static final int PORT = 8080;
     
     private void interpret(String[] args, Socket socket) {
         String username = usersConnected.get(socket);
@@ -90,24 +86,40 @@ public class CommandsController { private int numrooms;
     }
     private void updateRoomsClient(Socket socket) {
         try {
+            String message = "ROOM";
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             for(int i = 0; i < usersInTheRoom.size(); i++) {
-                String message = "ROOM" + " " + usersInTheRoom.get(i);
-                out.writeUTF(message);
+                message = (new StringBuilder().append(" " + usersInTheRoom.get(i))).toString();
             }
+            out.writeUTF(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void updateClientsInRoom(String room, Socket socket) {
+        String message = "USERROOM";
         try {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             ArrayList<String> users = usersInTheRoom.get(room);
             for(int i = 0; i < users.size(); i++) {
-                String message = "USERS" + " " + users.get(i);
-                out.writeUTF(message);
+                message = (new StringBuilder().append(" " + users.get(i))).toString();
             }
+            out.writeUTF(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void updateAllClients(Socket socket) {
+        String message = "USER";
+        ArrayList<String> users = (ArrayList<String>) usersConnected.values();
+        try {
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            for(int i = 0; i < usersConnected.size(); i++) {
+                message = (new StringBuilder().append(" " + users.get(i)).toString());
+            }
+            out.writeUTF(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
