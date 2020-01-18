@@ -91,7 +91,7 @@ public class CommandsController { private int numrooms;
             String message = "ROOM";
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             for(int i = 0; i < usersInTheRoom.size(); i++) {
-                message = (new StringBuilder().append(" " + usersInTheRoom.get(i))).toString();
+                message = (new StringBuilder().append(" ").append(usersInTheRoom.get(i))).toString();
             }
             out.writeUTF(message);
         } catch (IOException e) {
@@ -105,7 +105,7 @@ public class CommandsController { private int numrooms;
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             ArrayList<String> users = usersInTheRoom.get(room);
             for(int i = 0; i < users.size(); i++) {
-                message = (new StringBuilder().append(" " + users.get(i))).toString();
+                message = (new StringBuilder().append(" ").append(users.get(i))).toString();
             }
             out.writeUTF(message);
         } catch (IOException e) {
@@ -119,7 +119,7 @@ public class CommandsController { private int numrooms;
         try {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             for(int i = 0; i < usersConnected.size(); i++) {
-                message = (new StringBuilder().append(" " + users.get(i)).toString());
+                message = (new StringBuilder().append(" ").append(users.get(i)).toString());
             }
             out.writeUTF(message);
         } catch (IOException e) {
@@ -148,9 +148,6 @@ public class CommandsController { private int numrooms;
     }
 
     private boolean userExists(String name) {
-        if(usersConnected.containsValue(name)) {
-            return true;
-        }
-        return false;
+        return usersConnected.containsValue(name);
     }
 }
