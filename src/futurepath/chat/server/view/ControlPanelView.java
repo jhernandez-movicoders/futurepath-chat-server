@@ -12,6 +12,9 @@ import futurepath.chat.server.exceptions.numberOfUsersTooBigException;
 import futurepath.chat.server.exceptions.numberOfUsersTooSmallException;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -20,8 +23,8 @@ import javax.swing.JOptionPane;
  * @author Angela Serrano
  */
 public class ControlPanelView extends javax.swing.JFrame {
-    
-    private Connection conn = null;
+
+    private Connection t = null;
 
     /**
      * Creates new form ControlPanelView
@@ -33,7 +36,7 @@ public class ControlPanelView extends javax.swing.JFrame {
         setPreferredSize(d);
         setMinimumSize(d);
         setResizable(false);
-        
+
     }
 
     /**
@@ -108,16 +111,22 @@ public class ControlPanelView extends javax.swing.JFrame {
 
                 int numberOfRooms = Integer.parseInt(roomsActiveTF.getText());
                 int numberOfUsers = Integer.parseInt(usersPerRoomTF.getText());
-                
+
                 if (connectBT.getText().equals("Connect")) {
-                    //conectar el servidor con los parámetros
-                    conn = new Connection(numberOfRooms, numberOfUsers);
+                    try {
+                        //conectar el servidor con los parámetros
+                        t = new Connection(numberOfRooms, numberOfUsers);
+                        t.start();
+
+                    } catch (IOException ex) {
+                        Logger.getLogger(ControlPanelView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     connectBT.setText("Disconnect");
                     connectBT.setBackground(new Color(204, 96, 96));
                     roomsActiveTF.setEditable(false);
                     usersPerRoomTF.setEditable(false);
                 } else {
-                    conn.close();
+                    t.close();
                     connectBT.setText("Connect");
                     connectBT.setBackground(new Color(97, 204, 144));
                     roomsActiveTF.setEditable(true);
@@ -126,6 +135,8 @@ public class ControlPanelView extends javax.swing.JFrame {
             }
         } catch (numberOfRoomsTooBigException | numberOfRoomsTooSmallException | numberOfUsersTooSmallException | numberOfUsersTooBigException ex) {
             JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            Logger.getLogger(ControlPanelView.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_connectBTActionPerformed
@@ -159,7 +170,7 @@ public class ControlPanelView extends javax.swing.JFrame {
                 return true;
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(new JFrame(),  "Please, introduce a correct value", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(new JFrame(), "Please, introduce a correct value", "Error", JOptionPane.ERROR_MESSAGE);
         }
         return false;
     }
