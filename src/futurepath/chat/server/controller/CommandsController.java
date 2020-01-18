@@ -52,7 +52,9 @@ public class CommandsController { private int numrooms;
                 break;
             case "SEND":
                 String[] messageArray = new String[args.length-2];
-                String message = String.join(",", messageArray);
+                String messageZ = (new StringBuilder().append(username).append(args[1])).toString();
+                String messageX = String.join(",", messageArray);
+                String message = messageZ + messageX;
                 if(usersInTheRoom.containsKey(args[1])) {
                     ArrayList<Socket> socketsToSend = getSocketsOfClients(usersInTheRoom.get(args[1]));
                     for(int i = 0; i < socketsToSend.size(); i++) {
