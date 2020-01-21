@@ -9,19 +9,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class CommandsController { private int numrooms;
-    private HashMap<Socket, String> usersConnected;
-    private HashMap<String, ArrayList<String>> usersInTheRoom; 
-    private ArrayList<Thread> threads;
+public class CommandsController { 
+    private int numrooms = 99;
+    private static HashMap<Socket, String> usersConnected = new HashMap<>();
+    private static HashMap<String, ArrayList<String>> usersInTheRoom = new HashMap<>(); 
+    private static ArrayList<Thread> threads = new ArrayList<>();
     
-    private void interpret(String[] args, Socket socket) {
+    public void interpret(String[] args, Socket socket) {
         String username = usersConnected.get(socket);
-        switch (args[0]) {
+        System.out.println(args[0]);
+        switch (args[0]) {                
             case "CONNECT":
                 if(userExists(username)) {
                     respond("Nombre de usuario ya existe.", socket);
                 } else {
-                    startThread(username, socket);
+                    usersConnected.put(socket, username);
+                    updateRoomsClient(socket);
                 }
                 break;
             case "JOIN":
@@ -32,11 +35,13 @@ public class CommandsController { private int numrooms;
                     } else {
                         usersInTheRoom.get(room).add(username);
                     }
-                } else {
+                }else {
                     if(usersInTheRoom.size() < numrooms) {
-                        ArrayList<String> users = new ArrayList<String>();
+                        ArrayList<String> users = new ArrayList<>();
                         users.add(username);
                         usersInTheRoom.put(room, users);
+                        System.out.println("CREADO");
+                        usersInTheRoom.toString();
                     } else {
                         respond("No existe este room y no se puede crear porque se ha alcanzado el limite de rooms.",socket);
                     }
@@ -137,14 +142,7 @@ public class CommandsController { private int numrooms;
     }
 
     private void startThread(String username, Socket socket) {
-    try {
-        usersConnected.put(socket, username);
-        updateRoomsClient(socket);
-        Thread thread = new Connection(1,1);
-        threads.add(thread);
-    } catch (IOException ex) {
-        Logger.getLogger(CommandsController.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        
     }
 
     private boolean userExists(String name) {
