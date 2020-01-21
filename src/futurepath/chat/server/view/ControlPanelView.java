@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class ControlPanelView extends javax.swing.JFrame {
 
-    private Connection t = null;
+    private Connection t;
 
     /**
      * Creates new form ControlPanelView
