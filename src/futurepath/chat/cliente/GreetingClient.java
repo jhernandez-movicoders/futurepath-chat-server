@@ -10,7 +10,7 @@ import java.io.*;
 public class GreetingClient {
 
    public static void main(String [] args) {
-      String serverName = "172.18.69.46";
+      String serverName = "localhost";//"172.18.69.46";
       int port = 6666;
       try {
          System.out.println("Connecting to " + serverName + " on port " + port);
